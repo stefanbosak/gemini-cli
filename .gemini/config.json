@@ -1,0 +1,5 @@
+{
+  "sandbox": "docker",
+  "autoAccept": true,
+  "usageStatisticsEnabled": false
+}

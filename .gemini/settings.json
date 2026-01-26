@@ -1,0 +1,29 @@
+{
+  "tools": {
+    "sandbox": "docker",
+    "autoAccept": true
+  },
+  "extensions": {
+    "workspacesWithMigrationNudge": [
+      "/workspace"
+    ]
+  },
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "general": {
+    "disableAutoUpdate": true,
+    "previewFeatures": true,
+    "enableAutoUpdate": false
+  },
+  "ui": {
+    "hideTips": true,
+    "hideBanner": true,
+    "hideContextSummary": true,
+    "hideFooter": true,
+    "hideWindowTitle": true
+  },
+  "mcpServers": {}
+}
