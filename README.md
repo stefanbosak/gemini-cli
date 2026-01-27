@@ -136,6 +136,7 @@ This repository provides a fully <span style="color: #0969da;">**containerized**
 
 ## Comparison
 | Image origin | Debian version | Vulnerabilities | DinD included |
+|--------------|----------------|-----------------|---------------|
 | Google sandbox | 12 | ~1500 | No |
 | Self-generated | 13 | ~200 | Yes |
 
