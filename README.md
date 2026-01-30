@@ -18,6 +18,7 @@ This repository provides a fully <span style="color: #0969da;">**containerized**
 
 ### 📚 Resources
 - 📖 [[Official Documentation](https://geminicli.com/docs/)
+- 📖 [AI models database](https://models.dev)
 
 ### ⚠️ Important Notices
 
