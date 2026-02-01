@@ -19,10 +19,6 @@ LABEL org.opencontainers.image.authors="Stefan Bosak" \
       org.opencontainers.image.title="Google Gemini CLI container" \
       org.opencontainers.image.description="Debian-based Google Gemini CLI container"
 
-# Python 3.14 from deadsnakes PPA (not in Debian 13/trixie distribution)
-COPY ./deadsnakes.list /etc/apt/sources.list.d/deadsnakes.list
-COPY ./deadsnakes.gpg /usr/share/keyrings/deadsnakes.gpg
-
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     bash \
@@ -43,7 +39,7 @@ RUN apt-get update \
     pigz \
     procps \
     psmisc \
-    python3.14-venv \
+    python3-venv \
     ripgrep \
     rsync \
     socat \
@@ -51,9 +47,6 @@ RUN apt-get update \
     vim \
     wget \
     whois \
-  && apt-get remove -y python3 \
-  && update-alternatives --install /usr/bin/python python /usr/bin/python3.14 0 \
-  && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 0 \
   && apt-get clean \
   && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
