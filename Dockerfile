@@ -2,10 +2,10 @@
 # FROM node:trixie-slim
 
 # Hardened Node.js (current) [2026-Jan]
-# FROM dhi.io/node:25-debian13-dev
+FROM dhi.io/node:25-debian13-dev
 
 # Hardened Node.js (LTS) [2026-Jan]
-FROM dhi.io/node:24-debian13-dev
+#FROM dhi.io/node:24-debian13-dev
 
 # Build arguments
 ARG TARGETARCH
