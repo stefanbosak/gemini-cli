@@ -62,7 +62,7 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then \
   && chmod +x "/usr/local/bin/toolbox"; \
   fi \
   # Install Google Gemini CLI (prerelease), Sequential Thinking MCP server
-  && npm install -g --no-audit --no-fund @google/gemini-cli @modelcontextprotocol/server-sequential-thinking \
+  && npm install -g --no-audit --no-fund @google/gemini-cli@nightly @modelcontextprotocol/server-sequential-thinking \
   # Install uv (Python package manager)
   && curl -LsSf https://astral.sh/uv/install.sh \
       | UV_INSTALL_DIR=/usr/local/bin sh \
