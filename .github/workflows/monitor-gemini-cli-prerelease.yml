@@ -1,0 +1,74 @@
+name: 'Monitor Google Gemini Pre-Release'
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check-prerelease:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Get latest pre-release from target repo
+        id: latest
+        run: |
+          PRERELEASE=$(curl -s "https://api.github.com/repos/google-gemini/gemini-cli/releases?per_page=10" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            | jq -r '[.[] | select(.prerelease == true)] | first | .tag_name // empty')
+
+          if [ -z "$PRERELEASE" ]; then
+            echo "No pre-release found."
+            echo "tag=" >> "$GITHUB_OUTPUT"
+          else
+            echo "Latest pre-release: $PRERELEASE"
+            echo "tag=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Restore with a prefix — always gets the most recently saved entry
+      - name: Restore cached last-known pre-release
+        uses: actions/cache/restore@v4
+        with:
+          path: .last-prerelease
+          key: last-known-prerelease-${{ github.run_id }}   # never matches (forces restore-keys lookup)
+          restore-keys: last-known-prerelease-               # matches any previously saved entry
+
+      - name: Read cached pre-release tag
+        id: cached
+        run: |
+          if [ -f .last-prerelease ]; then
+            echo "tag=$(cat .last-prerelease)" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=" >> "$GITHUB_OUTPUT"
+          fi
+          cat "$GITHUB_OUTPUT"
+
+      - name: Compare and trigger downstream workflow
+        if: steps.latest.outputs.tag != steps.cached.outputs.tag && steps.latest.outputs.tag != ''
+        run: |
+          echo "New pre-release detected: ${{ steps.latest.outputs.tag }} (was: ${{ steps.cached.outputs.tag }})"
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/dispatches" \
+            -d '{
+              "event_type": "new-gemini-cli-prerelease",
+              "client_payload": {
+                "tag": "${{ steps.latest.outputs.tag }}"
+              }
+            }'
+
+      - name: Save latest pre-release tag
+        if: steps.latest.outputs.tag != ''
+        run: echo "${{ steps.latest.outputs.tag }}" > .last-prerelease
+
+      # Save with a unique key each run — avoids the "already exists" conflict
+      - name: Update cache
+        uses: actions/cache/save@v4
+        if: steps.latest.outputs.tag != ''
+        with:
+          path: .last-prerelease
+          key: last-known-prerelease-${{ github.run_id }}
