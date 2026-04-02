@@ -12,6 +12,19 @@
 
 ---
 
+## 📦 Latest Build
+
+<!-- VERSION_INFO_START -->
+| Component | Version |
+|-----------|---------|
+| **Google Gemini CLI** | [`0.36.0`](https://github.com/google-gemini/gemini-cli/releases/tag/v0.36.0) |
+
+> 🔄 Last updated: 2026-04-02T19:38:09Z · [Build #1](https://github.com/stefanbosak/copilot-cli/actions/runs/)
+<!-- VERSION_INFO_END -->
+
+
+---
+
 ## 📋 Overview
 
 This repository provides a fully automated preparation of <span style="color: #0969da;">**containerized**</span> [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) environment with integrated <span style="color: #8250df;">**MCP server**</span> support using <span style="color: #1a7f37;">**Docker-in-Docker**</span> architecture.

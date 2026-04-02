@@ -297,6 +297,8 @@ jobs:
     permissions:
       contents: read
       packages: read
+    outputs:
+      GEMINI_CLI_VERSION: ${{ steps.test.outputs.GEMINI_CLI_VERSION }}
     steps:
       - name: 'Install cosign'
         uses: sigstore/cosign-installer@main
@@ -312,18 +314,23 @@ jobs:
             "${IMAGE}@${DIGEST}"
 
       - name: 'Run tests in Docker container'
+        id: test
         shell: bash
         run: |
-          docker run --rm \
+          GEMINI_CLI_VERSION=$(docker run --rm \
             -v /dev:/dev \
             -u root \
             ${{ env.GH_REGISTRY }}/${{ github.repository }}:${{ needs.prepare.outputs.CONTAINER_TAG }} \
-            sh -c 'v=$(gemini --version | grep -oP "\d+\.\d+\.\d+(-\d+)?"); echo "GEMINI_CLI_VERSION=${v}";'
+            sh -c 'gemini --version | grep -oP "\d+\.\d+\.\d+(-\d+)?"')
+          echo "GEMINI_CLI_VERSION=${GEMINI_CLI_VERSION}"
           docker run --rm \
             -v /dev:/dev \
             -u root \
             ${{ env.GH_REGISTRY }}/${{ github.repository }}:${{ needs.prepare.outputs.CONTAINER_TAG }} \
             sh -c 'v=$(docker --version | grep -oP "\d+\.\d+\.\d+(-\d+)?"); echo "DOCKER_CLI_VERSION=${v}";'
+          if [[ "${{ matrix.platform_pair }}" == "linux-amd64" ]]; then
+            echo "GEMINI_CLI_VERSION=${GEMINI_CLI_VERSION}" >> ${GITHUB_OUTPUT}
+          fi
 
   scan:
     name: 'Scan image (${{ matrix.platform_pair }})'
@@ -379,3 +386,59 @@ jobs:
           retention-days: 7
           overwrite: true
           compression-level: 0
+
+  update-readme:
+    name: 'Update README.md with version info'
+    needs: [prepare, test]
+    if: success()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@main
+
+      - name: 'Update README.md version section'
+        shell: bash
+        env:
+          GEMINI_VERSION: ${{ needs.test.outputs.GEMINI_CLI_VERSION }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          export UPDATED_AT="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          python3 << 'PYEOF'
+          import re, os
+          gemini_version = os.environ['GEMINI_VERSION']
+          updated_at = os.environ['UPDATED_AT']
+          run_url = os.environ['RUN_URL']
+          run_number = os.environ['RUN_NUMBER']
+          new_section = (
+              "<!-- VERSION_INFO_START -->\n"
+              "| Component | Version |\n"
+              "|-----------|---------|\n"
+              f"| **Google Gemini CLI** | [`{gemini_version}`](https://github.com/google-gemini/gemini-cli/releases/tag/v{gemini_version}) |\n"
+              "\n"
+              f"> 🔄 Last updated: {updated_at} · [Build #{run_number}]({run_url})\n"
+              "<!-- VERSION_INFO_END -->"
+          )
+          with open('README.md', 'r') as f:
+              content = f.read()
+          pattern = r'<!-- VERSION_INFO_START -->.*?<!-- VERSION_INFO_END -->'
+          new_content = re.sub(pattern, new_section, content, flags=re.DOTALL)
+          with open('README.md', 'w') as f:
+              f.write(new_content)
+          print('README.md updated successfully')
+          PYEOF
+
+      - name: 'Commit and push README.md'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update version info in README.md"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
