@@ -19,7 +19,7 @@
 |-----------|---------|
 | **Google Gemini CLI** | [`0.36.0`](https://github.com/google-gemini/gemini-cli/releases/tag/v0.36.0) |
 
-> 🔄 Last updated: 2026-04-02T19:38:09Z · [Build #1](https://github.com/stefanbosak/copilot-cli/actions/runs/)
+> 🔄 Last updated: 2026-04-02T21:26:34Z · [Build #24](https://github.com/stefanbosak/gemini-cli/actions/runs/23922642929)
 <!-- VERSION_INFO_END -->
 
 
