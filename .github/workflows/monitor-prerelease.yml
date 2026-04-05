@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
 
     steps:
       - name: Get latest pre-release from target repo
@@ -75,3 +76,26 @@ jobs:
         with:
           path: .last-prerelease
           key: last-known-prerelease-${{ github.run_id }}
+
+      - name: Delete old caches
+        uses: actions/github-script@main
+        with:
+          script: |
+            const { data } = await github.rest.actions.getActionsCacheList({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              key: 'last-known-prerelease-',
+              per_page: 100,
+            });
+            // Sort newest first; keep the first entry, delete the rest
+            const caches = data.actions_caches.sort(
+              (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            );
+            for (const cache of caches.slice(1)) {
+              console.log(`Deleting old cache: ${cache.key} (id ${cache.id})`);
+              await github.rest.actions.deleteActionsCacheById({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                cache_id: cache.id,
+              });
+            }
