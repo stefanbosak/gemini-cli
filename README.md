@@ -43,6 +43,14 @@ This repository provides a fully automated preparation of <span style="color: #0
 - 📖 [[Official Documentation](https://geminicli.com/docs/)
 - 📖 [AI models database](https://models.dev)
 
+## Google IP prefixes, subdomains for whitelisting
+- IPv4:
+  - curl -s https://www.gstatic.com/ipranges/goog.json | jq '.prefixes[] | select(.ipv4Prefix) | .ipv4Prefix' | tr -d '\"'
+  - curl -s https://www.gstatic.com/ipranges/cloud.json | jq '.prefixes[] | select(.ipv4Prefix) | .ipv4Prefix' | tr -d '\"'
+- IPv6:
+  - curl -s https://www.gstatic.com/ipranges/goog.json | jq '.prefixes[] | select(.ipv6Prefix) | .ipv6Prefix' | tr -d '\"'
+  - curl -s https://www.gstatic.com/ipranges/cloud.json | jq '.prefixes[] | select(.ipv6Prefix) | .ipv6Prefix' | tr -d '\"'
+
 ### ⚠️ Important Notices
 
 > [!NOTE]
