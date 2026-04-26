@@ -1,0 +1,20 @@
+name: 'Monitor release'
+
+on:
+  schedule:
+    - cron: '59 1 * * 3'
+  workflow_dispatch:
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - name: 'Monitor release'
+        uses: stefanbosak/gh-actions/monitor-release@main
+        with:
+          project_owner: 'google-gemini'
+          project_repo: 'gemini-cli'
