@@ -11,6 +11,18 @@ FROM dhi.io/node:25-debian13-dev
 ARG TARGETARCH
 ARG TARGETOS
 
+ARG CONTAINER_USER=user
+ARG CONTAINER_GROUP=user
+
+ARG CONTAINER_USER_ID=1000
+ARG CONTAINER_GROUP_ID=1000
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ARG WORKSPACE_ROOT_DIR="/home/${CONTAINER_USER}"
+
+ARG GEMINI_CLI_RELEASE_VERSION="latest"
+
 # OCI Standard Labels
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md
 LABEL org.opencontainers.image.description="Google Gemini CLI container and tooling"
@@ -49,7 +61,17 @@ RUN apt-get update \
 COPY "./tools.yaml" "/usr/local/bin/tools.yaml"
 
 # Install development tools and configure Docker-in-Docker
-RUN if [ "${TARGETARCH}" = "amd64" ]; then \
+RUN getent group "${CONTAINER_GROUP_ID}" >/dev/null || groupadd --gid "${CONTAINER_GROUP_ID}" "${CONTAINER_GROUP}" \
+    && getent passwd "${CONTAINER_USER_ID}" >/dev/null || useradd \
+      --uid "${CONTAINER_USER_ID}" \
+      --gid "${CONTAINER_GROUP_ID}" \
+      --groups "${CONTAINER_GROUP}" \
+      -M -d "${WORKSPACE_ROOT_DIR}" \
+      -s /bin/bash \
+      "${CONTAINER_USER}" \
+    && mkdir -p /workspace \
+    && chown -R "${CONTAINER_USER}:${CONTAINER_GROUP}" "${WORKSPACE_ROOT_DIR}" /workspace \
+  && if [ "${TARGETARCH}" = "amd64" ]; then \
   TOOLBOX_VERSION=$(git ls-remote --refs --sort='version:refname' \
       --tags "https://github.com/googleapis/mcp-toolbox" \
       | awk -F"/" '!($0 ~ /alpha|beta|rc|dev|None|list|nightly|\{/) \
@@ -71,7 +93,7 @@ RUN if [ "${TARGETARCH}" = "amd64" ]; then \
   # Install Docker-in-Docker
   # Note: DinD via QEMU on ARM64 not supported
   # (ARM64 requires ARM64 kernel from host, not available on AMD64 host)
-  && curl -fsSL https://get.docker.com | sh \
+  && curl -fsSL https://test.docker.com | sh \
   && if ! getent group docker > /dev/null 2>&1; then \
        groupadd -g 999 docker; \
      fi \

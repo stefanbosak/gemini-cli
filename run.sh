@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Google Gemini CLI runner wrapper
+# CLI runner wrapper
 #
 
 #
-# Docker container Google Gemini CLI wrapper
+# CLI tool wrapper
 #
-gemini() {
+run() {
   # extract repository name
   export CWD="$(basename $(dirname $(realpath "${0}")))"
 
@@ -41,19 +41,22 @@ gemini() {
     fi
   fi
 
-   # pull up-to-date image and start gemini
+  TOOL=${CWD/-cli/}
+  TOOL_ARGS=("-y")
+
+  # pull up-to-date image and start CLI tool
   docker run --quiet --rm -it --pull=always --cpus=4 --memory=1G \
     --group-add "${DOCKER_GID}" \
-    --env-file "${HOME}/.gemini/.env" \
+    --env-file "${HOME}/.${TOOL}/.env" \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    -v "${HOME}/.gemini:/home/${USER}/.gemini" \
+    -v "${HOME}/.${TOOL}:/home/${USER}/.${TOOL}" \
     -v "${HOME}/workspace:/workspace" \
     -v "${HOME}/.docker:/home/${USER}/.docker:ro" \
     -v "${HOME}/.docker/mcp:/home/${USER}/.docker/mcp" \
     -w "/workspace" \
     "${CONTAINER_IMAGE}" \
-    gemini -y "$@"
+    "${TOOL}" "${TOOL_ARGS[@]}" "${@}"
 }
 
 # run
-gemini "${@}"
+run "${@}"
