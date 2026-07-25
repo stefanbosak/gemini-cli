@@ -18,7 +18,7 @@
 |-----------|---------|
 | **Google Gemini CLI** | [`0.52.0-nightly.20260723.g9681621c6`](https://github.com/google-gemini/gemini-cli/releases/tag/v0.52.0-nightly.20260723.g9681621c6) |
 
-> 🔄 Last updated: 2026-07-24T12:51:53Z · [Build #55](https://github.com/stefanbosak/gemini-cli/actions/runs/30094495350)
+> 🔄 Last updated: 2026-07-25T03:30:40Z · [Build #56](https://github.com/stefanbosak/gemini-cli/actions/runs/30142309489)
 <!-- VERSION_INFO_END -->
 
 
