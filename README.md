@@ -16,9 +16,9 @@
 <!-- VERSION_INFO_START -->
 | Component | Version |
 |-----------|---------|
-| **Google Gemini CLI** | [`0.66.0-nightly.20261018.ged96faedf`](https://github.com/google-gemini/gemini-cli/releases/tag/v0.66.0-nightly.20261018.ged96faedf) |
+| **Google Gemini CLI** | [`0.66.0-nightly.20261019.ged96faedf`](https://github.com/google-gemini/gemini-cli/releases/tag/v0.66.0-nightly.20261019.ged96faedf) |
 
-> 🔄 Last updated: 2026-10-18T02:39:19Z · [Build #166](https://github.com/stefanbosak/gemini-cli/actions/runs/39090643320)
+> 🔄 Last updated: 2026-10-19T02:44:00Z · [Build #167](https://github.com/stefanbosak/gemini-cli/actions/runs/39191071197)
 <!-- VERSION_INFO_END -->
 
 
