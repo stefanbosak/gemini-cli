@@ -18,7 +18,7 @@ on:
         description: 'GEMINI_CLI_VERSION'
         required: false
         type: string
-        default: 'v0.67.0-nightly.20261021.gd00859d6b'
+        default: 'v0.67.0-nightly.20261022.g09d81bf11'
       CONTAINER_TAG:
         description: 'CONTAINER_TAG (text)'
         required: false
